@@ -1,7 +1,6 @@
 const dgram = require('dgram');
 
-const parseServerInfo = (msg) => {
-  const res = {};
+const readHeader = (msg) => {
   var offset = 0;
   // header
   const header = {};
@@ -10,8 +9,14 @@ const parseServerInfo = (msg) => {
   header.ackret = msg.slice(offset, ++offset);
   header.packettype = msg.slice(offset, ++offset)
   msg.slice(offset, ++offset);
-  res.header = header;
+  return header;
+}
 
+const parseServerInfo = (msg) => {
+  const res = {};
+  var offset = 0;
+  // header
+  res.header = readHeader(msg); offset+=8;
   // important data
   res._255 = msg.readInt8(offset++);
   res.packetversion = msg.readInt8(offset++);
@@ -41,11 +46,32 @@ const parseServerInfo = (msg) => {
 
 const parsePlayerInfo = (msg) => {
   const res = {};
-  // TODO everything
+  res.playerinfo = [];
+  res.header = readHeader(msg);
+  for(var i = 0; i < 16; i++) {
+    offset = 8 + i * 36; // 24 is the size of one plrinfo
+    const player = {};
+    player.node = msg.readInt8(offset++);
+    if(player.node === -1) {
+      continue
+    }
+    player.name = msg.toString('utf-8', offset, offset+22); offset+=22;
+    player.address = [];
+
+    for(var a = 0; a < 4; a++)
+      player.address.push(msg.readInt8(offset++));
+    player.team = msg.readInt8(offset++);
+    player.skin = msg.readInt8(offset++);
+    player.data = msg.readInt8(offset++);
+    player.score = msg.readInt32LE(offset); offset+=4;
+    player.timeinserver = msg.readInt16BE(offset); offset+=2;
+    
+    res.playerinfo.push(player);
+  }
   return res;
 }
 
-const getSrb2Info = (address, port=5029, servercb, playercb) => {
+exports.getSrb2Info = (address, port=5029, servercb, playercb) => {
   const sock = dgram.createSocket('udp4');
   var respGot = 0;
 
@@ -76,6 +102,3 @@ const getSrb2Info = (address, port=5029, servercb, playercb) => {
   sock.connect(port, address);
 }
 
-if(!module.parent)  {
-  getSrb2Info("formulabun.club", 5029, console.log, console.log);
-}
