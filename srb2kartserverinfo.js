@@ -12,6 +12,10 @@ const readHeader = (msg) => {
   return header;
 }
 
+const trimNullBytes = (bytes) => {
+  return bytes.slice(0, bytes.indexOf(0x0));
+}
+
 const parseServerInfo = (msg) => {
   const res = {};
   var offset = 0;
@@ -20,7 +24,7 @@ const parseServerInfo = (msg) => {
   // important data
   res._255 = msg.readInt8(offset++);
   res.packetversion = msg.readInt8(offset++);
-  res.application = msg.toString('utf-8', offset, offset+16); offset += 16;
+  res.application = trimNullBytes(msg.slice(offset, offset+16)).toString('utf-8'); offset += 16;
   res.version = msg.readInt8(offset++);
   res.subversion = msg.readInt8(offset++);
   res.numberofplayers = msg.readInt8(offset++);
@@ -32,13 +36,13 @@ const parseServerInfo = (msg) => {
   res.fileneedednum = msg.readInt8(offset++);
   res.time = msg.readInt32LE(offset); offset+= 4;
   res.leveltime = msg.readInt32LE(offset); offset+= 4;
-  res.servername = msg.toString('utf-8', offset, offset+32); offset += 32;
-  res.mapname = msg.toString('utf-8', offset, offset+8); offset += 8;
-  res.maptitle = msg.toString('utf-8', offset, offset+33); offset += 33;
+  res.servername = trimNullBytes(msg.slice(offset, offset+32)).toString('utf-8'); offset += 32;
+  res.mapname = trimNullBytes(msg.slice(offset, offset+8)).toString('utf-8'); offset += 8;
+  res.maptitle = trimNullBytes(msg.slice(offset, offset+33)).toString('utf-8'); offset += 33;
   res.mapmd5 = msg.slice(offset, offset+16); offset += 16;
   res.actnum = msg.readInt8(offset++);
   res.iszon = msg.readInt8(offset++);
-  res.httpsource = msg.toString('utf-8', offset, offset+256); offset+=256;
+  res.httpsource = trimNullBytes(msg.slice(offset, offset+256)).toString('utf-8'); offset+=256;
   res.fileneeded = msg.slice(offset, offset+915); offset+=915;
 
   return res;
@@ -55,7 +59,7 @@ const parsePlayerInfo = (msg) => {
     if(player.node === -1) {
       continue
     }
-    player.name = msg.toString('utf-8', offset, offset+22); offset+=22;
+    player.name = trimNullBytes(msg.slice(offset, offset+22)).toString('utf-8'); offset+=22;
     player.address = [];
 
     for(var a = 0; a < 4; a++)
