@@ -64,7 +64,7 @@ const parsePlayerInfo = (msg) => {
 
     for(var a = 0; a < 4; a++)
       player.address.push(msg.readInt8(offset++));
-    player.team = msg.readInt8(offset++);
+    player.spectator = msg[offset++] === 0xFF;
     player.skin = msg.readInt8(offset++);
     player.data = msg.readInt8(offset++);
     player.score = msg.readInt32LE(offset); offset+=4;
