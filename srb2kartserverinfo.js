@@ -52,6 +52,7 @@ const parsePlayerInfo = (msg) => {
   const res = {};
   res.playerinfo = [];
   res.header = readHeader(msg);
+  let offset
   for(var i = 0; i < 16; i++) {
     offset = 8 + i * 36; // 24 is the size of one plrinfo
     const player = {};
