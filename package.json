@@ -1,0 +1,22 @@
+{
+  "name": "srb2kartinfoparse",
+  "version": "1.0.0",
+  "description": "fetches srb2kart server info over udp and parses the results",
+  "main": "srb2kartserverinfo.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/formulabun/srb2kartInfoParser.git"
+  },
+  "keywords": [
+    "srb2kart"
+  ],
+  "author": "Fl_GUI",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/formulabun/srb2kartInfoParser/issues"
+  },
+  "homepage": "https://github.com/formulabun/srb2kartInfoParser#readme"
+}
