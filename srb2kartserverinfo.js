@@ -18,6 +18,7 @@ const trimNullBytes = (bytes) => {
 
 const parseServerInfo = (msg) => {
   const res = {};
+  res.fileneeded = [];
   var offset = 0;
   // header
   res.header = readHeader(msg); offset+=8;
@@ -43,7 +44,16 @@ const parseServerInfo = (msg) => {
   res.actnum = msg.readInt8(offset++);
   res.iszon = msg.readInt8(offset++);
   res.httpsource = trimNullBytes(msg.slice(offset, offset+256)).toString('utf-8'); offset+=256;
-  res.fileneeded = msg.slice(offset, offset+915); offset+=915;
+
+  for( let i = 0; i < res.fileneedednum; i++) {
+    const filedata = {};
+    filedata.filestatus = msg.readInt8(offset++);
+    filedata.filesize = msg.readInt32LE(offset) ; offset += 4;
+    filedata.filename = trimNullBytes(msg.slice(offset, offset+128)).toString('utf-8');
+    offset += filedata.filename.length + 1; // string length plus null byte
+    filedata.checksum = msg.slice(offset, offset+16); offset += 16;
+    res.fileneeded.push(filedata);
+  }
 
   return res;
 }
