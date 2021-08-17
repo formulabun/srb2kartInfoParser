@@ -18,5 +18,8 @@
   "bugs": {
     "url": "https://github.com/formulabun/srb2kartInfoParser/issues"
   },
-  "homepage": "https://github.com/formulabun/srb2kartInfoParser#readme"
+  "homepage": "https://github.com/formulabun/srb2kartInfoParser#readme",
+  "dependencies": {
+    "jszip": "^3.7.1"
+  }
 }

@@ -1,0 +1,26 @@
+const JSZip = require('jszip');
+const fs = require('fs');
+const parseSocFile = require('./socparse');
+
+module.exports = (filename, socs={}) =>
+  new Promise((resolve, reject) => {
+    fs.readFile(filename, (err, data) => {
+      if (err) reject(err);
+      else resolve(data);
+    });
+  }).catch((e) => {
+    console.error("error", e);
+    console.error('does the file exist?');
+  }).then(
+    JSZip.loadAsync
+  ).catch(e => {
+    console.error('error:', e);
+    console.error('is this a pk3/zip file?');
+  }).then(zip => {
+    return Promise.all(zip.folder('SOC').file(/.*/).map(e => e.async('string')));
+  }).then(fs =>  {
+    fs.forEach(file => {
+      socs = parseSocFile(file, socs);
+    })
+    return socs;
+  })
