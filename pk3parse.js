@@ -17,10 +17,15 @@ module.exports = (filename, socs={}) =>
     console.error('error:', e);
     console.error('is this a pk3/zip file?');
   }).then(zip => {
-    return Promise.all(zip.folder('SOC').file(/.*/).map(e => e.async('string')));
-  }).then(fs =>  {
-    fs.forEach(file => {
+    const socdir = zip.folder(/soc/i)[0].name
+    const socfiles = Promise.all(zip.folder(socdir).file(/.*/).map(e => e.async('string')));
+    return Promise.all([socfiles, zip]);
+  }).catch(e => {
+    console.error('error:', e);
+    console.error('there might be something wrong with the file contents.');
+  }).then(([socfiles, zip]) =>  {
+    socfiles.forEach(file => {
       socs = parseSocFile(file, socs);
     })
-    return socs;
+    return {socs};
   })
