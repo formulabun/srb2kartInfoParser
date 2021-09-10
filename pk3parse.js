@@ -1,8 +1,9 @@
 import JSZip from 'jszip';
 import fs from 'fs';
 import parseSocFile from "./socparse.js";
+import convertGraphic from "./graphicsconvert.js";
 
-function extractSoc(filename, socs={}) {
+function openFile(filename) {
   return new Promise((resolve, reject) => {
     fs.readFile(filename, (err, data) => {
       if (err) reject(err);
@@ -16,14 +17,35 @@ function extractSoc(filename, socs={}) {
   ).catch(e => {
     console.error('error:', e);
     console.error('is this a pk3/zip file?');
-  }).then(zip => {
+  })
+}
+
+function extractGraphics(filename) {
+  return openFile(filename
+  ).then(zip => {
+    const graphicsdir = zip.folder(/graphics/i)[0].name;
+    return Promise.all(
+      zip.folder(graphicsdir).file(/.*/).map(e => 
+        e.async('nodebuffer').then(content => ({file:e.name, content}))
+      ));
+  }).then(graphics => {
+    return graphics.forEach(g => {
+      const out = fs.createWriteStream("/home/fguilini/repos/formulabun/srb2infoparse/" + g.file);
+      convertGraphic(g.content).pipe(out);
+      out.on('finish', () => console.log(`written ${g.file}`));
+    });
+  })
+}
+
+function extractSoc(filename, socs={}) {
+  return openFile(filename
+  ).then(zip => {
     const socdir = zip.folder(/soc/i)[0].name
-    const socfiles = Promise.all(zip.folder(socdir).file(/.*/).map(e => e.async('string')));
-    return Promise.all([socfiles, zip]);
+    return Promise.all(zip.folder(socdir).file(/.*/).map(e => e.async('string')));
   }).catch(e => {
     console.error('error:', e);
-    console.error('there might be something wrong with the file contents.');
-  }).then(([socfiles, zip]) =>  {
+    console.error(`there might be something wrong with the file contents of ${filename}.`);
+  }).then((socfiles) =>  {
     socfiles.forEach(file => {
       socs = parseSocFile(file, socs);
     })
@@ -31,4 +53,4 @@ function extractSoc(filename, socs={}) {
   })
 }
 
-export default extractSoc;
+export {extractGraphics, extractSoc};
