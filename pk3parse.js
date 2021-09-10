@@ -3,7 +3,7 @@ import fs from 'fs';
 import parseSocFile from "./socparse.js";
 
 function extractSoc(filename, socs={}) {
-  new Promise((resolve, reject) => {
+  return new Promise((resolve, reject) => {
     fs.readFile(filename, (err, data) => {
       if (err) reject(err);
       else resolve(data);

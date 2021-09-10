@@ -1,6 +1,7 @@
 function parseSocFile(lines, socs={}) {
 
-  var type = name = "";
+  var type, name, k, v;
+  type = name = "";
   lines
     .split("\r\n")
     .filter(l => l.indexOf("#") != 0)
