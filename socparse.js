@@ -1,8 +1,6 @@
-
 function parseSocFile(lines, socs={}) {
 
   var type = name = "";
-  console.log(lines);
   lines
     .split("\r\n")
     .filter(l => l.indexOf("#") != 0)
@@ -29,4 +27,4 @@ function parseSocFile(lines, socs={}) {
   return socs;
 }
 
-module.exports = parseSocFile;
+export default parseSocFile;

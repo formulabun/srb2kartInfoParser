@@ -1,8 +1,8 @@
-const JSZip = require('jszip');
-const fs = require('fs');
-const parseSocFile = require('./socparse');
+import JSZip from 'jszip';
+import fs from 'fs';
+import parseSocFile from "./socparse.js";
 
-module.exports = (filename, socs={}) =>
+function extractSoc(filename, socs={}) {
   new Promise((resolve, reject) => {
     fs.readFile(filename, (err, data) => {
       if (err) reject(err);
@@ -27,5 +27,8 @@ module.exports = (filename, socs={}) =>
     socfiles.forEach(file => {
       socs = parseSocFile(file, socs);
     })
-    return {socs};
+    return socs;
   })
+}
+
+export default extractSoc;

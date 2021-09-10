@@ -3,6 +3,7 @@
   "version": "1.0.0",
   "description": "fetches srb2kart server info over udp and parses the results",
   "main": "srb2kartserverinfo.js",
+  "type": "module",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },
