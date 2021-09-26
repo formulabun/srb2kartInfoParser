@@ -3,9 +3,10 @@ function parseSocFile(lines, socs={}) {
   var type, name, k, v;
   type = name = "";
   lines
-    .split("\r\n")
+    .split(/\r?\n/)
     .filter(l => l.indexOf("#") != 0)
     .forEach(line => {
+      console.log(line);
       if (line.length === 0) {
         type = name = "";
         return;
