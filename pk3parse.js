@@ -30,7 +30,7 @@ function extractGraphics(filename) {
       ));
   }).then(graphics => {
     return graphics.forEach(g => {
-      const out = fs.createWriteStream("/home/fguilini/repos/formulabun/srb2infoparse/" + g.file);
+      const out = fs.createWriteStream("test/Graphics" + g.file);
       convertGraphic(g.content).pipe(out);
       out.on('finish', () => console.log(`written ${g.file}`));
     });
