@@ -6,7 +6,6 @@ function parseSocFile(lines, socs={}) {
     .split(/\r?\n/)
     .filter(l => l.indexOf("#") != 0)
     .forEach(line => {
-      console.log(line);
       if (line.length === 0) {
         type = name = "";
         return;
