@@ -1,4 +1,4 @@
-const dgram = require('dgram');
+import dgram from 'dgram';
 
 const readHeader = (msg) => {
   var offset = 0;
@@ -86,7 +86,7 @@ const parsePlayerInfo = (msg) => {
   return res;
 }
 
-exports.getSrb2Info = (address, port=5029, servercb, playercb, error) => {
+const getSrb2Info = (address, port=5029, servercb, playercb, error) => {
   const sock = dgram.createSocket('udp4');
   var respGot = 0;
 
@@ -118,3 +118,4 @@ exports.getSrb2Info = (address, port=5029, servercb, playercb, error) => {
   sock.connect(port, address);
 }
 
+export default getSrb2Info;
