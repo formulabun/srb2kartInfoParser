@@ -2,6 +2,7 @@ import JSZip from 'jszip';
 import fs from 'fs';
 import parseSocFile from "./socparse.js";
 import convertGraphic from "./graphicsconvert.js";
+import { basename } from 'path';
 
 function openFile(filename) {
   return new Promise((resolve, reject) => {
@@ -47,7 +48,7 @@ function extractSoc(filename, socs={}) {
     console.error(`there might be something wrong with the file contents of ${filename}.`);
   }).then((socfiles) =>  {
     socfiles.forEach(file => {
-      socs = parseSocFile(file, socs);
+      socs = parseSocFile(basename(filename), file, socs);
     })
     return socs;
   })

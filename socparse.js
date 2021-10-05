@@ -1,4 +1,4 @@
-function parseSocFile(lines, socs={}) {
+function parseSocFile(filename, lines, socs={}) {
 
   var type, name, k, v;
   type = name = "";
@@ -16,13 +16,14 @@ function parseSocFile(lines, socs={}) {
         [type, name] = line.toLowerCase().split(" ").filter(w => w.length);
         if (!socs[type]) socs[type] = {};
         if (!socs[type][name]) socs[type][name] = {};
+        if (!socs[type][name].mappack) socs[type][name].mappack = filename;
         return;
       }
 
       if(type.length === 0) return;
 
       [k, v] = line.split("=").map(w => w.trim());
-      socs[type][name][k] = v;
+      socs[type][name][k.toLowerCase()] = v;
     });
   
   return socs;
