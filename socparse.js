@@ -14,6 +14,7 @@ function parseSocFile(filename, lines, socs={}) {
       const lower = line.toLowerCase();
       if (lower.startsWith("level ") || lower.startsWith("object ") || lower.startsWith("state ")) {
         [type, name] = line.toLowerCase().split(" ").filter(w => w.length);
+        if(type.toLowerCase() === 'level' && name.length !== 2) name = '0' + name
         if (!socs[type]) socs[type] = {};
         if (!socs[type][name]) socs[type][name] = {};
         if (!socs[type][name].mappack) socs[type][name].mappack = filename;
@@ -23,6 +24,9 @@ function parseSocFile(filename, lines, socs={}) {
       if(type.length === 0) return;
 
       [k, v] = line.split("=").map(w => w.trim());
+      if(k.toLowerCase() === 'numlaps') v = parseInt(v);
+      if(v.toLowerCase() === 'true') v = true;
+      if(v.toLowerCase() === 'false') v = false;
       socs[type][name][k.toLowerCase()] = v;
     });
   
