@@ -24,9 +24,9 @@ function parseSocFile(filename, lines, socs={}) {
       if(type.length === 0) return;
 
       [k, v] = line.split("=").map(w => w.trim());
-      if(k.toLowerCase() === 'numlaps') v = parseInt(v);
-      if(v.toLowerCase() === 'true') v = true;
-      if(v.toLowerCase() === 'false') v = false;
+      if(v?.toLowerCase() === 'true') v = true;
+      else if(v?.toLowerCase() === 'false') v = false;
+      else if(k?.toLowerCase() === 'numlaps') v = parseInt(v);
       socs[type][name][k.toLowerCase()] = v;
     });
   
