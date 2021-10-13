@@ -1,0 +1,6 @@
+# Test files
+test/*
+test.js
+
+# WIP
+graphicsconvert.js
