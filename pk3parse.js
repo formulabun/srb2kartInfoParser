@@ -1,8 +1,8 @@
 import JSZip from "jszip";
 import fs from "fs";
 import { basename } from "path";
-import parseSocFile from "./socparse";
-import convertGraphic from "./graphicsconvert";
+import parseSocFile from "./socparse.js";
+import convertGraphic from "./graphicsconvert.js";
 
 function openFile(filename) {
   return new Promise((resolve, reject) => {
