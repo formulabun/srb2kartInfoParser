@@ -1,6 +1,5 @@
 /* eslint-disable no-plusplus */
 import dgram from "dgram";
-import Buffer from "buffer";
 
 const readHeader = (msg) => {
   let offset = 0;
@@ -64,7 +63,7 @@ const parsePlayerInfo = (msg) => {
   res.header = readHeader(msg);
   let offset;
   for (let i = 0; i < 16; i++) {
-    offset = 8 + i * 36; // 24 is the size of one plrinfo
+    offset = 8 + i * 36; // 36 is the size of one plrinfo
     const player = {};
     player.node = msg.readInt8(offset++);
     if (player.node !== -1) {
