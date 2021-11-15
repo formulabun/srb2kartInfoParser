@@ -1,6 +1,6 @@
 {
   "name": "srb2kartinfoparse",
-  "version": "1.1.7",
+  "version": "1.2.0",
   "description": "fetches srb2kart server info over udp and parses the results",
   "main": "srb2kartserverinfo.js",
   "type": "module",
