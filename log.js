@@ -2,13 +2,22 @@ import { open } from "fs/promises";
 import { EventEmitter } from "events";
 import { watchFile } from "fs";
 
-let emitter;
 
 const gamestate = {
   players: [...Array(16)].map(() => new Object()), // eslint-disable-line no-new-object
 };
 
 const startsWith = (character) => (func) => (line) => (line[0] !== character ? false : func(line));
+
+const exactMatch = (linematch, eventname, onsucces = Function.prototype) => (line) => {
+  if(linematch === line) {
+    onsucces();
+    return {e:eventname};
+  } else
+    return false;
+}
+
+const longestNameReducer = (longest, newest) =>  !longest || (newest.name.length > longest.name.length) ? newest : longest;
 
 const parsers = [
   startsWith("*")((line) => {
@@ -24,7 +33,7 @@ const parsers = [
   }),
   startsWith("*")((line) => {
     if (line.search("renamed to") === -1) return false;
-    const [player] = gamestate.players.filter((p) => line.startsWith(p.name, 1));
+    const player = gamestate.players.filter((p) => line.startsWith(p.name, 1)).reduce(longestNameReducer, false);
     if (!player) return false;
     const { node } = player;
     const oldName = gamestate.players[node].name;
@@ -42,19 +51,17 @@ const parsers = [
   }),
   startsWith("*")((line) => {
     if (line.search("left the game") === -1) return false;
-    const [player] = gamestate.players.filter((p) => line.startsWith(p.name, 1));
+    const player = gamestate.players.filter((p) => line.startsWith(p.name, 1)).reduce(longestNameReducer, false);
     if (!player) return false;
     const { node } = player;
     gamestate.players[node] = {};
     return {
       e: "playerLeave",
-      o: {
-        player,
-      },
+      o: player,
     };
   }),
   startsWith("<")((line) => {
-    const [player] = gamestate.players.filter((p) => line.startsWith(p.name, 1));
+    const player = gamestate.players.filter((p) => line.startsWith(p.name, 1)).reduce(longestNameReducer, false);
     if (!player) return false;
     const message = line.substring(1 + player.name.length + 2);
     return {
@@ -65,43 +72,82 @@ const parsers = [
       },
     };
   }),
+  ((line) => {
+    if(! line.startsWith("Map is now \""))
+      return false;
+    const mapid = line.substring("Map is now \"".length, "map is now \"".length + 5);
+    const mapname = line.substring("Map is now \"MAP__: ", line.length - 1);
+    return {
+      e: 'newMap',
+      o: {
+        mapid,
+        mapname
+      }
+    }
+  }),
+  startsWith("$")((line) => {
+    return {
+      e: 'command',
+      o: {
+        command: line.substr(1)
+      }
+    }
+  }),
+  ((line) => {
+    const player = gamestate.players.filter((p) => line.startsWith(p.name)).reduce(longestNameReducer, false); 
+    if(!player) return false;
+    const { name } = player;
+    if(line.substr(name.length) !== "has finished the race.") return false;
+    return {
+      e: "playerFinish",
+      o: player,
+    }
+  }),
+  exactMatch('Entering main game loop...', 'serverStart'),
+  exactMatch('Shutdown tty console', 'serverStop', () => {
+    gamestate.players = gamestate.players.map(() => ({}));
+  }),
+  exactMatch('Speeding of to level...', 'speedingOffTo'),
+  exactMatch('The round has ended.', 'roundEnd'),
 ];
 
-function emitLines(lines) {
-  if (lines) {
-    lines.split("\n").filter((l) => l).forEach((l) => {
-      emitter.emit("line", l);
-      parsers.forEach((parser) => {
-        const ret = parser(l);
-        if (ret) emitter.emit(ret.e, ret.o);
+class Srb2KartLogEmitter extends EventEmitter {
+  constructor(filepath) {
+    super();
+    (async () => {
+      let fh = await open(filepath);
+      this.emitLines(await fh.readFile({ encoding: "utf-8" }));
+
+      watchFile(filepath, { interval: 100 }, async (curr, prev) => {
+        if (curr.size < prev.size) {
+          await fh.close();
+          fh = await open(filepath);
+        }
+        this.emitLines(await fh.readFile({ encoding: "utf-8" }));
       });
-    });
+    })();
   }
+
+  emitLines(lines) {
+    if (lines) {
+      lines.split("\n").filter((l) => l).forEach((l) => {
+        this.emit("line", l);
+        parsers.forEach((parser) => {
+          const ret = parser(l);
+          if (ret) this.emit(ret.e, ret.o);
+        });
+      });
+    }
+  }
+
 }
 
-function startEmitter(filepath) {
-  (async () => {
-    let fh = await open(filepath);
-    emitLines(await fh.readFile({ encoding: "utf-8" }));
-
-    watchFile(filepath, { interval: 100 }, async (curr, prev) => {
-      if (curr.size < prev.size) {
-        await fh.close();
-        fh = await open(filepath);
-      }
-      emitLines(await fh.readFile({ encoding: "utf-8" }));
-    });
-  })();
-
-  return emitter;
-}
-
+let s2klogger
 function logger(file = "~/.srb2kart/log.txt") {
-  if (!emitter) {
-    emitter = new EventEmitter();
-    startEmitter(file);
+  if (!s2klogger) {
+    s2klogger = new Srb2KartLogEmitter(file);
   }
-  return emitter;
+  return s2klogger;
 }
 
 export default logger;
