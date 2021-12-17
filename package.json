@@ -9,7 +9,7 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/formulabun/srb2kartInfoParser.git"
+    "url": "git+https://github.com/formulabun/srb2kartjs"
   },
   "keywords": [
     "srb2kart"
@@ -17,9 +17,9 @@
   "author": "Fl_GUI",
   "license": "MIT",
   "bugs": {
-    "url": "https://github.com/formulabun/srb2kartInfoParser/issues"
+    "url": "https://github.com/formulabun/srb2kartjs"
   },
-  "homepage": "https://github.com/formulabun/srb2kartInfoParser#readme",
+  "homepage": "https://github.com/formulabun/srb2kartjs#readme",
   "dependencies": {
     "canvas": "^2.8.0",
     "jszip": "^3.7.1"
