@@ -42,7 +42,7 @@ async function _getLump(filehandle, lumpname) {
   const lumpdata = directory.filter(e => e.name === lumpname);
   if (lumpdata.length !== 1) throw "Lump is not found, or not unique";
   const buffer = Buffer.alloc(lumpdata[0].size);
-  await filehandle.read(buffer, 0, lumpdata.filepos, lumpdata.size);
+  await filehandle.read(buffer, 0, lumpdata[0].size, lumpdata[0].filepos);
   return buffer;
 }
 
