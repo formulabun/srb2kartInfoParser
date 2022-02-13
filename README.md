@@ -88,6 +88,57 @@ Javascript module for everything related to the open source game [srb2kart](http
 ```
 
 ```js
+"playerVoteCalled"
+{
+    player: { // the player calling the vote
+        name,
+        ip,
+		node,
+    },
+	command
+}
+```
+
+```js
+"playerVote"
+{
+    player: { // the player voting yes or no
+        name,
+        ip,
+        node,
+    },
+    choice, // the player's vote, -1 or 1
+	vote: {
+        callee: {
+            name,
+            ip,
+            node
+        },
+        command,
+        votedYes: [ {player} ], // list of player objects that already have voted yes
+        votedNo: [ {player} ], // list of player objects that already have voted no
+    }
+}
+```
+
+```js
+"voteComplete"
+{
+    passed,
+	vote: {
+        callee: {
+            name,
+            ip,
+            node
+        },
+        command,
+        votedYes: [ {player} ], // list of player objects that already have voted yes
+        votedNo: [ {player} ], // list of player objects that already have voted no
+    }
+}
+```
+
+```js
 "serverStart"
 {}
 ```
