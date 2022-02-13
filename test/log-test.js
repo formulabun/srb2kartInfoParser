@@ -30,18 +30,37 @@ describe ("logger", function () {
         const voteStart = log.playerVoteCalled("*Player 2 called a vote to exitlevel. Vote in chat with y / n.")
         const vote = log.playerVote("Player 2 voted  1");
         const voteResult = log.voteComplete("*Vote passed! (1 yes, 0 no)")
+        log.playerLeave("*Player 2 left the game");
         expect(voteStart).to.be.ok;
         expect(voteStart.o.player.name).to.equal("Player 2");
         expect(voteStart.o.command).to.equal("exitlevel");
         expect(vote).to.be.ok;
         expect(vote.o.player.name).to.equal("Player 2");
         expect(vote.o.vote.command).to.equal("exitlevel");
-        expect(vote.o.result).to.equal(1);
+        expect(vote.o.choice).to.equal(1);
         expect(voteResult).to.be.ok;
         expect(voteResult.o.vote.command).to.equal("exitlevel");
         expect(voteResult.o.passed).to.be.true;
         expect(voteResult.o.vote.votedYes.length).to.equal(1);
         expect(voteResult.o.vote.votedNo.length).to.equal(0);
+      });
+
+      it("works for undecisive players", function() {
+        const join = log.playerJoin("*Player 2 has joined the game (node 1) (127.0.0.1:41187)");
+        const voteStart = log.playerVoteCalled("*Player 2 called a vote to exitlevel. Vote in chat with y / n.")
+        const voteYes = log.playerVote("Player 2 voted  1");
+        expect(voteYes.o.vote.votedYes.length).to.equal(1);
+        expect(voteYes.o.vote.votedNo.length).to.equal(0);
+
+        const voteNo = log.playerVote("Player 2 voted  -1");
+        expect(voteNo.o.vote.votedYes.length).to.equal(0);
+        expect(voteNo.o.vote.votedNo.length).to.equal(1);
+
+        const voteYesAgain = log.playerVote("Player 2 voted  1");
+        const voteResult = log.voteComplete("*Vote passed! (1 yes, 0 no)")
+        expect(voteYesAgain.o.vote.votedYes.length).to.equal(1);
+        expect(voteYesAgain.o.vote.votedNo.length).to.equal(0);
+        log.playerLeave("*Player 2 left the game");
       });
     });
   });

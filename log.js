@@ -170,7 +170,11 @@ class Srb2KartLogEmitter extends EventEmitter {
     if (!player) return false;
     const begin = line.substr(1 + player.name.length + " called a vote to ".length);
     const command = begin.substr(0, begin.indexOf("."));
-    this.parsersState.vote = {callee: player, command, votedYes: [], votedNo: []};
+    this.parsersState.vote = {
+      callee: player,
+      command,
+      voteResults: this._gamestate.players.map(p => {return p || {p, choice: -1}})
+    };
     return {
       e: "playerVoteCalled",
       o: {
@@ -182,15 +186,20 @@ class Srb2KartLogEmitter extends EventEmitter {
     if(!this.parsersState.vote) return false;
     const player = this._gamestate.players.filter((p) => line.startsWith(p.name)).reduce(longestNameReducer, false);
     if(!player) return false;
-    const result = parseInt(line.substr(player.name.length + " voted ".length));
-    if(!result) return false;
-    if( result == 1)
-      this.parsersState.vote.votedYes.push(player);
-    else 
-      this.parsersState.vote.votedNo.push(player);
+    const choice = parseInt(line.substr(player.name.length + " voted ".length));
+    if(!choice) return false;
+    this.parsersState.vote.voteResults[player.node] = {player, choice};
     return {
       e: "playerVote",
-      o: {player, result, vote:this.parsersState.vote}
+      o: {
+        player,
+        choice,
+        vote: {
+          ...this.parsersState.vote,
+          votedYes: this.parsersState.vote.voteResults.filter(o => o.choice === 1).map(o => o.p),
+          votedNo: this.parsersState.vote.voteResults.filter(o => o.choice === -1).map(o => o.p),
+        }
+      }
     };
   })
 
@@ -205,7 +214,11 @@ class Srb2KartLogEmitter extends EventEmitter {
       e: "voteComplete",
       o: {
         passed: voteSuccess && !voteFailed,
-        vote
+        vote: {
+          ...vote,
+          votedYes: vote.voteResults.filter(o => o.choice === 1).map(o => o.p),
+          votedNo: vote.voteResults.filter(o => o.choice === -1).map(o => o.p),
+        }
       }
     };
   })
