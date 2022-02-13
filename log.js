@@ -51,6 +51,9 @@ class Srb2KartLogEmitter extends EventEmitter {
       this.serverStop,
       this.speedingOffTo,
       this.roundEnd,
+      this.playerVoteCalled,
+      this.playerVote,
+      this.voteResults,
     ];
 
     this.parsersState = {};
