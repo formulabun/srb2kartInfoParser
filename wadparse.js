@@ -12,7 +12,9 @@ async function _getHeader(filehandle) {
 
 export async function getHeader(filename) {
   const file = await open(filename);
-  return await _getHeader(file);
+  const header = await _getHeader(file);
+  file.close();
+  return header;
 }
 
 async function _getDirectory(filehandle) {
@@ -34,7 +36,9 @@ async function _getDirectory(filehandle) {
 
 export async function getDirectory(filename) {
   const file = await open(filename);
-  return await _getDirectory(file);
+  const directory = await _getDirectory(file);
+  file.close();
+  return directory;
 }
 
 async function _getLump(filehandle, lumpname) {
@@ -48,5 +52,7 @@ async function _getLump(filehandle, lumpname) {
 
 export async function getLump(filename, lumpname) {
   const file = await open(filename);
-  return await _getLump(file, lumpname);
+  const lump = await _getLump(file, lumpname);
+  file.close();
+  return lump;
 }

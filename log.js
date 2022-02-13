@@ -1,6 +1,6 @@
 import { open } from "fs/promises";
 import { EventEmitter } from "events";
-import { watchFile } from "fs";
+import { watchFile, unwatchFile } from "fs";
 
 // couple of helper function
 const startsWith = (character) => (func) => (line) => (line[0] !== character ? false : func(line));
@@ -23,6 +23,8 @@ class Srb2KartLogEmitter extends EventEmitter {
     this._gamestate = {
       players: [...Array(16)].map(() => new Object()), // eslint-disable-line no-new-object
     };
+
+    this.filepath = filepath;
 
     (async () => {
       let fh = await open(filepath);
@@ -50,6 +52,12 @@ class Srb2KartLogEmitter extends EventEmitter {
       this.speedingOffTo,
       this.roundEnd,
     ];
+
+    this.parsersState = {};
+  }
+
+  stop() {
+    unwatchFile(this.filepath);
   }
 
   set gamestate(state) { this._gamestate = state; }
@@ -78,6 +86,7 @@ class Srb2KartLogEmitter extends EventEmitter {
       o: this._gamestate.players[node],
     };
   })
+
   playerRename = startsWith("*")((line) => {
     if (line.search("renamed to") === -1) return false;
     const player = this._gamestate.players.filter((p) => line.startsWith(p.name, 1)).reduce(longestNameReducer, false);
@@ -154,6 +163,51 @@ class Srb2KartLogEmitter extends EventEmitter {
       e: "playerFinish",
       o: player,
     }
+  })
+
+  playerVoteCalled = startsWith("*")((line) => {
+    const player = this._gamestate.players.filter((p) => line.startsWith(p.name, 1)).reduce(longestNameReducer, false);
+    if (!player) return false;
+    const begin = line.substr(1 + player.name.length + " called a vote to ".length);
+    const command = begin.substr(0, begin.indexOf("."));
+    this.parsersState.vote = {callee: player, command, votedYes: [], votedNo: []};
+    return {
+      e: "playerVoteCalled",
+      o: {
+        player, command
+      }};
+  })
+
+  playerVote = ((line) => {
+    if(!this.parsersState.vote) return false;
+    const player = this._gamestate.players.filter((p) => line.startsWith(p.name)).reduce(longestNameReducer, false);
+    if(!player) return false;
+    const result = parseInt(line.substr(player.name.length + " voted ".length));
+    if(!result) return false;
+    if( result == 1)
+      this.parsersState.vote.votedYes.push(player);
+    else 
+      this.parsersState.vote.votedNo.push(player);
+    return {
+      e: "playerVote",
+      o: {player, result, vote:this.parsersState.vote}
+    };
+  })
+
+  voteComplete = startsWith("*")((line) => {
+    if(!this.parsersState.vote) return false
+    const voteSuccess = line.startsWith("*Vote passed!");
+    const voteFailed = line.startsWith("*Vote failed.");
+    if(! (voteSuccess || voteFailed)) return false
+    const vote = this.parsersState.vote;
+    this.parsersState.vote = {};
+    return {
+      e: "voteComplete",
+      o: {
+        passed: voteSuccess && !voteFailed,
+        vote
+      }
+    };
   })
 
   serverStart = exactMatch('Entering main game loop...', 'serverStart')
