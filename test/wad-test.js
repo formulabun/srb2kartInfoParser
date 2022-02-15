@@ -8,6 +8,7 @@ import {expect} from 'chai';
 
 describe("wadparse", function () {
   const akiwad = "./test/wads/KC_AkiIzayoi_v1.2.wad";
+  const chars_kart = "./test/wads/chars.kart";
   describe("#getHeader", function () {
     it("doesn't crash", function() {
       return getHeader(akiwad);
@@ -36,6 +37,15 @@ describe("wadparse", function () {
     it("doesn't crash and returns somethig", function(done) {
       getLump(akiwad, "S_SKIN").then(res => {
         expect(res).to.be.ok;
+        done();
+      }).catch(done);
+    });
+
+    it("returns all the files if multiple", function(done) {
+      getLump(chars_kart, "S_SKIN").then(res => {
+        expect(res).to.be.ok;
+        expect(res).to.have.lengthOf(4);
+        expect(res[0]).to.be.a('buffer');
         done();
       }).catch(done);
     });

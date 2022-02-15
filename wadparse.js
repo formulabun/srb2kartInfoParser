@@ -41,18 +41,19 @@ export async function getDirectory(filename) {
   return directory;
 }
 
-async function _getLump(filehandle, lumpname) {
+async function _getLumps(filehandle, lumpname) {
   const directory = await _getDirectory(filehandle);
   const lumpdata = directory.filter(e => e.name === lumpname);
-  if (lumpdata.length !== 1) throw "Lump is not found, or not unique";
-  const buffer = Buffer.alloc(lumpdata[0].size);
-  await filehandle.read(buffer, 0, lumpdata[0].size, lumpdata[0].filepos);
-  return buffer;
+  if (lumpdata.length === 0) throw "Lump is not found";
+  return await Promise.all(lumpdata.map(lump => {
+    const buffer = Buffer.alloc(lump.size);
+    return filehandle.read(buffer, 0, lump.size, lump.filepos).then(() => buffer);
+  }));
 }
 
-export async function getLump(filename, lumpname) {
+export async function getLumps(filename, lumpname) {
   const file = await open(filename);
-  const lump = await _getLump(file, lumpname);
+  const lumps = await _getLumps(file, lumpname);
   file.close();
-  return lump;
+  return lumps;
 }
