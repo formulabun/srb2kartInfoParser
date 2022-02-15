@@ -10,9 +10,21 @@ Javascript module for everything related to the open source game [srb2kart](http
 
 `logger(filepath="~/.srb2kart/log.txt")`: Listens to the srb2kart log file at `filepath` and returns an event emitter, see [log events](#logevents). eg. `const logemitter = logger(); logemitter.on("playerJoin", (o) => console.log(o.name + " has joined the game."))`
 
-`extractSocG(filepath, socs={})`:  parses the soc files in `filepath` and adds returns the soc `socs` object with the new data.
+#### pk3
+
+`extractSoc(filepath, socs={})`:  parses the soc files in `filepath` and adds returns the soc `socs` object with the new data.
 
 `parseSocFile(filename, lines, socs={})`: given the content of a socfile in `lines`, parse the content and add the definitions to the `socs` object which this function returns. `filename` is added to the map metadata.
+
+#### wad
+
+Each function returns a promise.
+
+`getHeader(filename)`: The header of the wad file. 
+
+`getDirectory(filename)`: Get a list of lump information.
+
+`getLumps(filename, lumpname)`: Get a list of lumps matching the filename as buffers.
 
 
 
