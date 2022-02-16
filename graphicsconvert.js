@@ -34,9 +34,9 @@ function convertGraphic(bytes, palette) {
       
       for(var j = 0 ; j < pixel_count ; j++) {
         const pixel = bytes.readUInt8(col+(rowoffset++));
-        image.data[width*4*(j+rowstart) + i*4] = palette.readInt8(pixel*3);
-        image.data[width*4*(j+rowstart) + i*4 + 1] = palette.readInt8(pixel*3 + 1);
-        image.data[width*4*(j+rowstart) + i*4 + 2] = palette.readInt8(pixel*3 + 2);
+        image.data[width*4*(j+rowstart) + i*4] = palette.readUInt8(pixel*3);
+        image.data[width*4*(j+rowstart) + i*4 + 1] = palette.readUInt8(pixel*3 + 1);
+        image.data[width*4*(j+rowstart) + i*4 + 2] = palette.readUInt8(pixel*3 + 2);
         image.data[width*4*(j+rowstart) + i*4 + 3] = 255;
       }
       dummy_val = bytes.readUInt8(col+(rowoffset++));
@@ -44,7 +44,7 @@ function convertGraphic(bytes, palette) {
     }
   }
   ctx.putImageData(image, 0, 0);
-  return canvas.createPNGStream();
+  return canvas;
 }
 
 export default convertGraphic;

@@ -11,11 +11,11 @@ function openFile(filename) {
       else resolve(data);
     });
   }).catch((e) => {
-    throw new Error(`${e}Does the file exist?`);
+    throw new Error(`${e} Does the file exist?`);
   }).then(
     JSZip.loadAsync,
   ).catch((e) => {
-    throw new Error(`${e}Is this a pk3/zip file?`);
+    throw new Error(`${e} Is this a pk3/zip file?`);
   });
 }
 
