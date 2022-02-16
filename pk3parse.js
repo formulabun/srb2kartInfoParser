@@ -45,4 +45,4 @@ function extractSoc(filename, socs = {}) {
   });
 }
 
-export { extractGraphics, extractSoc };
+export { openFile, extractGraphics, extractSoc };

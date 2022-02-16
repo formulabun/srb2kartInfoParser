@@ -1,27 +1,8 @@
 import Canvas from 'canvas';
 const {createCanvas} = Canvas;
 
-const defaultPalette = [
-  176, 176, 160, 177, 160, 162, 185, 186, 186, 187, 168, 169, 170, 189,
-  0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
-  0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
-  0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
-  0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
-  0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
-  0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
-  0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
-  0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
-  0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
-  0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
-  0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
-  0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
-  0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
-  0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
-  0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
-  0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
-]
 // algorithm from the doomwiki
-function convertGraphic(bytes) {
+function convertGraphic(bytes, palette) {
   const width = bytes.readUInt16LE(0);
   const height = bytes.readUInt16LE(2);
   const leftoffset = bytes.readUInt16LE(4);
@@ -53,9 +34,9 @@ function convertGraphic(bytes) {
       
       for(var j = 0 ; j < pixel_count ; j++) {
         const pixel = bytes.readUInt8(col+(rowoffset++));
-        image.data[width*4*(j+rowstart) + i*4] = pixel;
-        image.data[width*4*(j+rowstart) + i*4 + 1] = pixel;
-        image.data[width*4*(j+rowstart) + i*4 + 2] = pixel;
+        image.data[width*4*(j+rowstart) + i*4] = palette.readInt8(pixel*3);
+        image.data[width*4*(j+rowstart) + i*4 + 1] = palette.readInt8(pixel*3 + 1);
+        image.data[width*4*(j+rowstart) + i*4 + 2] = palette.readInt8(pixel*3 + 2);
         image.data[width*4*(j+rowstart) + i*4 + 3] = 255;
       }
       dummy_val = bytes.readUInt8(col+(rowoffset++));
