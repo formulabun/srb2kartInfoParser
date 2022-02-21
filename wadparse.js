@@ -10,11 +10,16 @@ async function _getHeader(filehandle) {
   };
 }
 
-export async function getHeader(filename) {
+async function getHeader(filename) {
   const file = await open(filename);
   const header = await _getHeader(file);
   file.close();
   return header;
+}
+
+async function isWad(filename) {
+  const header = await getHeader(filename);
+  return header.identification === "IWAD" || header.identification === "PWAD";
 }
 
 async function _getDirectory(filehandle) {
@@ -34,7 +39,7 @@ async function _getDirectory(filehandle) {
   return result;
 }
 
-export async function getDirectory(filename) {
+async function getDirectory(filename) {
   const file = await open(filename);
   const directory = await _getDirectory(file);
   file.close();
@@ -51,9 +56,11 @@ async function _getLumps(filehandle, lumpname) {
   }));
 }
 
-export async function getLumps(filename, lumpname) {
+async function getLumps(filename, lumpname) {
   const file = await open(filename);
   const lumps = await _getLumps(file, lumpname);
   file.close();
   return lumps;
 }
+
+export { getHeader, isWad, getDirectory, getLumps };

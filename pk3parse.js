@@ -19,6 +19,14 @@ function openFile(filename) {
   });
 }
 
+async function isPk3(filename) {
+  return openFile(filename).then(
+    () => true
+  ).catch(
+    () => false
+  );
+}
+
 function extractGraphics(filename) {
   return openFile(filename).then((zip) => {
     const graphicsdir = zip.folder(/graphics/i)[0].name;
@@ -45,4 +53,4 @@ function extractSoc(filename, socs = {}) {
   });
 }
 
-export { openFile, extractGraphics, extractSoc };
+export { openFile, isPk3, extractGraphics, extractSoc };

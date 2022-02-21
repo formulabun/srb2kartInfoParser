@@ -1,4 +1,5 @@
 import {
+  isWad,
   getHeader,
   getDirectory,
   getLumps
@@ -9,6 +10,22 @@ import {expect} from 'chai';
 describe("wadparse", function () {
   const akiwad = "./test/wads/KC_AkiIzayoi_v1.2.wad";
   const chars_kart = "./test/wads/chars.kart";
+  const apk3 = "./test/pk3s/KRB_IP-v2.1.pk3";
+  describe("#iswad", function() {
+    it("is true for a wad", function(done) {
+      isWad(akiwad).then(res => {
+        expect(res).to.be.true;
+        done();
+      }).catch(done);
+    });
+
+    it("is false for a pk3", function(done) {
+      isWad(apk3).then(res => {
+        expect(res).to.be.false;
+        done();
+      }).catch(done);
+    });
+  });
   describe("#getHeader", function () {
     it("doesn't crash", function() {
       return getHeader(akiwad);
