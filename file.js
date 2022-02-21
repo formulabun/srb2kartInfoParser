@@ -1,8 +1,14 @@
 import { isWad, getDirectory, getLumps } from './main.js';
 import { isPk3, openFile as pk3Open } from './pk3parse.js';
 
+
 class pk3 {
   constructor(path) {
+    this.path = path;
+  }
+
+  async loadData() {
+    this.data = await pk3Open(this.path);
   }
 
   getDirectory() {
@@ -26,6 +32,9 @@ class pk3 {
 
 class wad {
   constructor(filename) {
+  }
+
+  async loadData() {
   }
 
   getText(file) {
