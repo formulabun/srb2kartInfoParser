@@ -2,8 +2,11 @@ import {expect} from 'chai';
 import fs from 'fs';
 
 import { openFile } from '../pk3parse.js';
-import { getLumps } from '../wadparse.js';
-import convertGraphic from '../graphicsconvert.js';
+
+import {
+  getLumps,
+  convertGraphic
+} from '../main.js';
 
 describe("graphics", function() {
   describe("convertGraphic", function() {

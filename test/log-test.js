@@ -1,4 +1,4 @@
-import logger from '../log.js';
+import {logger} from '../main.js';
 
 import {expect} from 'chai';
 

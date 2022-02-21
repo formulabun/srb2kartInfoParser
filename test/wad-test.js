@@ -2,7 +2,7 @@ import {
   getHeader,
   getDirectory,
   getLumps
-} from "../wadparse.js";
+} from "../main.js";
 
 import {expect} from 'chai';
 
