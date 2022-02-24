@@ -31,6 +31,9 @@ export class Pk3 {
   getImage(file) {
     const base = basename(file);
     if( /MAP..P/i.test(base) ) {
+      const mapid = base.substr(3,2);
+      this.getAllSocs().then(soc => {
+      });
     }
   }
 
@@ -45,7 +48,8 @@ export class Pk3 {
   getAllSocs() {
     let fullSoc = {};
     const socs = [];
-    this.data.folder("SOC").forEach((path, file) => socs.push(file.async("string")));
+    const socfolder = this.data.folder(/soc/i)[0].name;
+    this.data.folder(socfolder).forEach((path, file) => socs.push(file.async("string")));
     return Promise.all(socs).then(socfiles => 
       socfiles.forEach(socfile => parseSocFile(basename(this.path), socfile, fullSoc))
     ).then(() => fullSoc);
