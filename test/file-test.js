@@ -26,7 +26,7 @@ describe("file.js", function() {
         ipfile.loadData().then( () =>
           ipfile.setBaseFile("./test/wads/srb2.pk3")
         ).then( () => 
-          ipfile.getImage("Graphics/MAPS0P.lmp")
+          ipfile.getImage("Graphics/MAPS0P")
         ).then((image) => {
           expect(image).to.be.ok;
           expect(image).to.be.instanceof(Canvas.Canvas);
@@ -41,5 +41,8 @@ describe("file.js", function() {
         }).catch(done);
       });
     });
+  });
+
+  describe("wadfile", function() {
   });
 });

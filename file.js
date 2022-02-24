@@ -1,6 +1,6 @@
 import {basename} from 'path';
 
-import { isWad, getDirectory, getLumps } from './main.js';
+import { isWad, getDirectory, getLumps } from './wadparse.js';
 import { isPk3, openFile as pk3Open } from './pk3parse.js';
 import { root, addPath } from './directory.js';
 import parseSocFile from './socparse.js';
@@ -14,7 +14,7 @@ export class Pk3 {
   async setBaseFile(file) {
     const srb2pk3 = await openFile(file)
     await srb2pk3.loadData()
-    this.PLAYPAL = await srb2pk3.getBuffer("PLAYPAL")
+    this.PLAYPAL = (await srb2pk3.getBuffer("PLAYPAL"))[0]
   }
 
   async loadData() {
@@ -79,12 +79,16 @@ export class Pk3 {
 
 export class Wad {
   constructor(filename) {
+    this.filename = filename;
   }
 
   async loadData() {
+    this.directory = await getDirectory(this.filename);
+    return this;
   }
 
   getText(file) {
+    return Promise.all(this.getBuffer(file).map(buffer => buffer.toString('utf-8')));
   }
 
   getImage(file) {
@@ -93,10 +97,16 @@ export class Wad {
   getImage(file, palette) {
   }
   
-  getSoc(file) {
+  async getSoc(file) {
+    let soc = {};
+    (await this.getText(file)).forEach(socText => {
+      soc = parseSocFile(basename(this.filename, socText, soc))
+    });
+    return soc
   }
   
   getBuffer(file) {
+    return getLumps(this.filename, file);
   }
 }
 
