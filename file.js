@@ -11,13 +11,20 @@ export class Pk3 {
     this.path = path;
   }
 
+  async setBaseFile(file) {
+    const srb2pk3 = await openFile(file)
+    await srb2pk3.loadData()
+    this.PLAYPAL = await srb2pk3.getBuffer("PLAYPAL")
+  }
+
   async loadData() {
     this.data = await pk3Open(this.path);
+    return this;
   }
 
   getDirectory() {
     if(this.directory) return this.directory;
-    this.directory = empty();
+    this.directory = root();
     this.data.forEach((relPath, file) => {
       addPath(this.directory, relPath);
     });
@@ -28,17 +35,27 @@ export class Pk3 {
     return this.data.file(file).async("string");
   }
 
-  getImage(file) {
+  async getImage(file) {
     const base = basename(file);
-    if( /MAP..P/i.test(base) ) {
-      const mapid = base.substr(3,2);
-      this.getAllSocs().then(soc => {
-      });
+    const dir = this.getDirectory();
+    if( /^MAP..P.*/i.test(base) ) {
+      const mapid = base.substr(3,2).toLowerCase();
+      const soc = await this.getAllSocs();
+      const paletteid = soc.level[mapid].palette;
+      let palette;
+      if(paletteid) {
+        const palettePath = dir.search(/palettes/i)?.search(new RegExp(`^PAL${paletteid}\.pal$`)).fullpath;
+        palette = await this.getBuffer(palettePath);
+      } else {
+        if( ! this.PLAYPAL) throw "Missing basefile."
+        palette = this.PLAYPAL;
+      }
+      return this.getImageWithPalette(file, palette)
     }
   }
 
-  getImage(file, palette) {
-    return this.data.file(file).async("nodebuffer").then(content => graphicsconvert(content, palette));
+  getImageWithPalette(file, palette) {
+    return this.data.file(file).async("nodebuffer").then(content => convertGraphic(content, palette));
   }
 
   getSoc(file) {
@@ -56,11 +73,11 @@ export class Pk3 {
   }
 
   getBuffer(file) {
-    return this.data.file(file).async("nodebuffer");
+    return this.data.file(file.substr(file[0] === "/" ? 1 : 0)).async("nodebuffer");
   }
 }
 
-export class wad {
+export class Wad {
   constructor(filename) {
   }
 
@@ -84,7 +101,7 @@ export class wad {
 }
 
 export default async function openFile(filename) {
-  if( await isWad(filename)) return new wad(filename);
+  if( await isWad(filename)) return new Wad(filename);
   if( await isPk3(filename)) return new Pk3(filename);
   throw "Not a wad or pk3.";
 }
