@@ -7,6 +7,13 @@ function empty(path, name) {
     children: {},
     get: function(filename) {
       return this.children[filename];
+    },
+    search: function(regex) {
+      for( let c in this.children) {
+        if( this.children.hasOwnProperty(c) && regex.test(c)) {
+          return this.children[c];
+        }
+      }
     }
   }
 }

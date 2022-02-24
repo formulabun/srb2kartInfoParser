@@ -49,4 +49,14 @@ describe("directory", function() {
       expect(a.get('a').get('b').get('c')).to.be.ok;
     });
   });
+
+  describe("#search", function() {
+    it("works", function() {
+      const a = root();
+      addPath(a, "spam");
+      addPath(a, "bar");
+      addPath(a, "foo");
+      expect(a.search(/sp../).fullpath).to.equal("/spam");
+    });
+  });
 });
