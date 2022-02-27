@@ -4,12 +4,11 @@ Javascript module for everything related to the open source game [srb2kart](http
 
 ## Documentation
 
-* [network](#Network)
-
-* [file](#File)
-  * [directory](#Directory)
-* [log file](#log%20file)
-* [other, basic stuff](#basic%20stuff)
+* [network](#network)
+* [file](#file)
+  * [directory](#directory)
+* [log file](#log)
+* [other, basic stuff](#basics)
 
 
 
@@ -90,7 +89,7 @@ Object used by the wad and pk3 file objects. This contains the entire directory 
 * Find all children where the name matches the regex.
 * Returns: [Directory object]
 
-# log file
+# log
 
 ##### `logger(filepath="~/.srb2kart/log.txt")`
 
@@ -239,7 +238,7 @@ Object used by the wad and pk3 file objects. This contains the entire directory 
 {}
 ```
 
-# Basic stuff
+# Basics
 
 #### pk3
 
