@@ -242,6 +242,8 @@ Object used by the wad and pk3 file objects. This contains the entire directory 
 
 #### pk3
 
+`openPk3(filename)`: Opens a soc file. Return a Promise containing a [JsZip](https://stuk.github.io/jszip/) object.
+
 `extractSoc(filepath, socs={})`:  parses the soc files in `filepath` and adds returns the soc `socs` object with the new data.
 
 #### wad

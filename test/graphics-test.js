@@ -3,7 +3,8 @@ import fs from "fs";
 
 import { openFile } from "../pk3parse.js";
 
-import { getLumps, convertGraphic } from "../main.js";
+import { getLumps } from "../main.js";
+import convertGraphic from "../graphicsconvert.js";
 
 describe("graphics", function () {
   describe("convertGraphic", function () {

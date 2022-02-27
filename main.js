@@ -1,6 +1,6 @@
 import getSrb2Info from "./srb2kartserverinfo.js";
 import logger from "./log.js";
-import { isPk3, extractGraphics, extractSoc } from "./pk3parse.js";
+import { openFile as openPk3, isPk3, extractGraphics, extractSoc } from "./pk3parse.js";
 import parseSocFile from "./socparse.js";
 import {
   isWad, getHeader, getDirectory, getLumps,
@@ -11,20 +11,16 @@ import openFile from "./file.js";
 export {
   getSrb2Info,
 
-  logger,
-
   openFile,
 
-  isPk3,
-  extractGraphics,
+  logger,
+
+  openPk3,
   extractSoc,
 
-  convertGraphic,
-
-  parseSocFile,
-
-  isWad,
   getHeader,
   getDirectory,
   getLumps,
+
+  parseSocFile,
 };

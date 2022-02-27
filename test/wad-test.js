@@ -1,4 +1,5 @@
-import { isWad, getHeader, getDirectory, getLumps } from "../main.js";
+import { getHeader, getDirectory, getLumps } from "../main.js";
+import { isWad } from "../wadparse.js";
 
 import { expect } from "chai";
 
