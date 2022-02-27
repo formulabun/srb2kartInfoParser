@@ -8,8 +8,8 @@ Javascript module for everything related to the open source game [srb2kart](http
 
 * [file](#File)
   * [directory](#Directory)
-* [log file](#log\ file)
-* [other, basic stuff](#basic\ stuff)
+* [log file](#log%20file)
+* [other, basic stuff](#basic%20stuff)
 
 
 
