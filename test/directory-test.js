@@ -56,7 +56,15 @@ describe("directory", function() {
       addPath(a, "spam");
       addPath(a, "bar");
       addPath(a, "foo");
-      expect(a.search(/sp../).fullpath).to.equal("/spam");
+      expect(a.search(/sp../)[0].fullpath).to.equal("/spam");
+    });
+
+    it("works for multiple matches", function() {
+      const a = root();
+      addPath(a, "foobar");
+      addPath(a, "foospam");
+      addPath(a, "foospambar");
+      expect(a.search(/^foo.*/)).to.have.lengthOf(3);
     });
   });
 });

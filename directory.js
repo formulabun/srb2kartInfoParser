@@ -9,11 +9,13 @@ function empty(path, name) {
       return this.children[filename];
     },
     search: function(regex) {
+      const result = [];
       for( let c in this.children) {
         if( this.children.hasOwnProperty(c) && regex.test(c)) {
-          return this.children[c];
+          result.push(this.children[c]);
         }
       }
+      return result;
     }
   }
 }
