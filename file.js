@@ -169,7 +169,7 @@ export class Wad extends Srb2kfile {
 }
 
 export default async function openFile(filename) {
-  if( await isWad(filename)) return new Wad(filename);
-  if( await isPk3(filename)) return new Pk3(filename);
+  if( await isWad(filename)) return new Wad(filename).loadData();
+  if( await isPk3(filename)) return new Pk3(filename).loadData();
   throw "Not a wad or pk3.";
 }

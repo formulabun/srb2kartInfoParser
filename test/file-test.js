@@ -2,9 +2,19 @@ import {expect} from 'chai';
 import Canvas from 'canvas';
 
 import {Pk3, Wad} from '../file.js';
+import openFile from '../file.js';
 
 describe("file.js", function() {
   const srb2pk3 = "./test/wads/srb2.pk3";
+  describe("#openFile", function() {
+    it("works", function(done) {
+      openFile(srb2pk3).then((wad) => {
+        expect(wad.directory).to.be.ok;
+        done()
+      }).catch(done);
+    });
+  });
+
   describe("pk3file", function() {
     const ctap = "./test/pk3s/kr_CTAP-v5.3.pk3";
     const ip = "./test/pk3s/KRB_IP-v2.1.pk3";
