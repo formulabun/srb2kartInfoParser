@@ -6,7 +6,7 @@ import { root, empty, addSingle, addPath } from './directory.js';
 import parseSocFile from './socparse.js';
 import convertGraphic from './graphicsconvert.js';
 
-const notImplementedError = Error("Not (yet) implemented.")
+const notImplementedError = (method) => Error(`${method} not (yet) implemented.`)
 
 function combineSocs(filename, socs) {
   let resSoc = {};
@@ -28,39 +28,38 @@ class Srb2kfile {
   }
 
   loadData() {
-    console.log("data")
-    throw notImplementedError
+    throw notImplementedError("loadData")
   }
 
   getDirectory() {
-    console.log("directory")
-    throw notImplementedError;
+    throw notImplementedError("getDirectory");
   }
 
   getText() {
-    console.log("text")
-    throw notImplementedError;
+    throw notImplementedError("getText");
   }
 
   async getImage(file) {
     const base = basename(file);
     const dir = this.getDirectory();
+    let palette;
     if( /^MAP..P.*/i.test(base) ) {
       const mapid = base.substr(3,2).toLowerCase();
       const soc = await this.getAllSocs();
       const paletteId = soc.level[mapid].palette;
-      let palette, palettePath;
+      let palettePath;
       if(paletteId) {
         palettePath = this.findPalette(paletteId);
       }
       if(palettePath) {
         palette = await this.getBuffer(palettePath);
-      } else {
+      }
+    }
+    if(!palette) {
         if( ! this.PLAYPAL) throw "Missing basefile."
         palette = this.PLAYPAL;
-      }
-      return this.getImageWithPalette(file, palette)
     }
+    return this.getImageWithPalette(file, palette)
   }
   getImageWithPalette(file, palette) {
     return this.getBuffer(file).then(content => convertGraphic(content, palette));
@@ -69,16 +68,13 @@ class Srb2kfile {
     return this.data.getText(file).then(content => parseSocFile(basename(this.path), content, {}));
   }
   getAllSocs() {
-    console.log("all socs")
-    throw notImplementedError;
+    throw notImplementedError("getAllSocs");
   }
   findPalette(paletteId) {
-    console.log("palette")
-    throw notImplementedError;
+    throw notImplementedError("findPalette");
   }
   getBuffer() {
-    console.log("buffer")
-    throw notImplementedError;
+    throw notImplementedError("getBuffer");
   }
 }
 
@@ -159,7 +155,6 @@ export class Wad extends Srb2kfile {
   }
 
   getBuffer(file) {
-    console.log(file);
     return this.getBuffers(file).then(bs => bs[0]);
   }
 
