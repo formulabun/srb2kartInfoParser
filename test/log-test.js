@@ -1,21 +1,23 @@
-import {logger} from '../main.js';
+import { logger } from "../main.js";
 
-import {expect} from 'chai';
+import { expect } from "chai";
 
-describe ("logger", function () {
+describe("logger", function () {
   describe("parsers", function () {
     let log;
-    before(function() {
+    before(function () {
       log = logger("/dev/null");
     });
 
-    after(function() {
+    after(function () {
       log.stop();
     });
 
     describe("#playerJoin, Rename and Leave", function () {
-      it("works", function() {
-        const join = log.playerJoin("*Player 2 has joined the game (node 1) (127.0.0.1:41187)");
+      it("works", function () {
+        const join = log.playerJoin(
+          "*Player 2 has joined the game (node 1) (127.0.0.1:41187)"
+        );
         const rename = log.playerRename("*Player 2 renamed to Fl_GUI");
         const leave = log.playerLeave("*Fl_GUI left the game");
         expect(join).to.be.ok;
@@ -24,12 +26,16 @@ describe ("logger", function () {
       });
     });
 
-    describe("voting", function() {
-      it("works", function() {
-        const join = log.playerJoin("*Player 2 has joined the game (node 1) (127.0.0.1:41187)");
-        const voteStart = log.playerVoteCalled("*Player 2 called a vote to exitlevel. Vote in chat with y / n.")
+    describe("voting", function () {
+      it("works", function () {
+        const join = log.playerJoin(
+          "*Player 2 has joined the game (node 1) (127.0.0.1:41187)"
+        );
+        const voteStart = log.playerVoteCalled(
+          "*Player 2 called a vote to exitlevel. Vote in chat with y / n."
+        );
         const vote = log.playerVote("Player 2 voted  1");
-        const voteResult = log.voteComplete("*Vote passed! (1 yes, 0 no)")
+        const voteResult = log.voteComplete("*Vote passed! (1 yes, 0 no)");
         log.playerLeave("*Player 2 left the game");
         expect(voteStart).to.be.ok;
         expect(voteStart.o.player.name).to.equal("Player 2");
@@ -45,9 +51,13 @@ describe ("logger", function () {
         expect(voteResult.o.vote.votedNo.length).to.equal(0);
       });
 
-      it("works for undecisive players", function() {
-        const join = log.playerJoin("*Player 2 has joined the game (node 1) (127.0.0.1:41187)");
-        const voteStart = log.playerVoteCalled("*Player 2 called a vote to exitlevel. Vote in chat with y / n.")
+      it("works for undecisive players", function () {
+        const join = log.playerJoin(
+          "*Player 2 has joined the game (node 1) (127.0.0.1:41187)"
+        );
+        const voteStart = log.playerVoteCalled(
+          "*Player 2 called a vote to exitlevel. Vote in chat with y / n."
+        );
         const voteYes = log.playerVote("Player 2 voted  1");
         expect(voteYes.o.vote.votedYes.length).to.equal(1);
         expect(voteYes.o.vote.votedNo.length).to.equal(0);
@@ -57,7 +67,7 @@ describe ("logger", function () {
         expect(voteNo.o.vote.votedNo.length).to.equal(1);
 
         const voteYesAgain = log.playerVote("Player 2 voted  1");
-        const voteResult = log.voteComplete("*Vote passed! (1 yes, 0 no)")
+        const voteResult = log.voteComplete("*Vote passed! (1 yes, 0 no)");
         expect(voteYesAgain.o.vote.votedYes.length).to.equal(1);
         expect(voteYesAgain.o.vote.votedNo.length).to.equal(0);
         log.playerLeave("*Player 2 left the game");

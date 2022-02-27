@@ -21,9 +21,9 @@ function openFile(filename) {
 
 async function isPk3(filename) {
   return openFile(filename).then(
-    () => true
+    () => true,
   ).catch(
-    () => false
+    () => false,
   );
 }
 
@@ -53,4 +53,6 @@ function extractSoc(filename, socs = {}) {
   });
 }
 
-export { openFile, isPk3, extractGraphics, extractSoc };
+export {
+  openFile, isPk3, extractGraphics, extractSoc,
+};
