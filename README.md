@@ -2,7 +2,7 @@
 
 Javascript module for everything related to the open source game [srb2kart](https://mb.srb2.org/threads/srb2kart.25868/).
 
-## Documentation
+# Documentation
 
 * [network](#network)
 * [file](#file)
@@ -101,9 +101,9 @@ Object used by the wad and pk3 file objects. This contains the entire directory 
 ```js
 "playerJoin"
 {
-	name,
-	ip,
-	node
+    name,
+    ip,
+    node
 }
 ```
 
@@ -134,7 +134,7 @@ Object used by the wad and pk3 file objects. This contains the entire directory 
 {
     player: {
         name,
-		ip,
+        ip,
         node
     },
     message
@@ -144,26 +144,26 @@ Object used by the wad and pk3 file objects. This contains the entire directory 
 ```js
 "newMap"
 {
-	mapid,
-	mapname
+    mapid,
+    mapname
 }
 ```
 
 ```js
 "command"
 {
-	command
+    command
 }
 ```
 
 ```js
 "playerFinish"
 {
-	player: {
-		name,
-		ip,
-		node
-	}
+    player: {
+        name,
+        ip,
+        node
+    }
 }
 ```
 
@@ -173,9 +173,9 @@ Object used by the wad and pk3 file objects. This contains the entire directory 
     player: { // the player calling the vote
         name,
         ip,
-		node,
+        node,
     },
-	command
+    command
 }
 ```
 
@@ -188,7 +188,7 @@ Object used by the wad and pk3 file objects. This contains the entire directory 
         node,
     },
     choice, // the player's vote, -1 or 1
-	vote: {
+    vote: {
         callee: {
             name,
             ip,
@@ -205,7 +205,7 @@ Object used by the wad and pk3 file objects. This contains the entire directory 
 "voteComplete"
 {
     passed,
-	vote: {
+    vote: {
         callee: {
             name,
             ip,
