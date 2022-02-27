@@ -49,7 +49,7 @@ async function getDirectory(filename) {
 async function _getLumps(filehandle, lumpname) {
   const directory = await _getDirectory(filehandle);
   const lumpdata = directory.filter(e => e.name === lumpname);
-  if (lumpdata.length === 0) throw "Lump is not found";
+  if (lumpdata.length === 0) throw `Lump ${lumpname} is not found`;
   return await Promise.all(lumpdata.map(lump => {
     const buffer = Buffer.alloc(lump.size);
     return filehandle.read(buffer, 0, lump.size, lump.filepos).then(() => buffer);
