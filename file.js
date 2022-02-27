@@ -2,11 +2,19 @@ import {basename} from 'path';
 
 import { isWad, getDirectory, getLumps } from './wadparse.js';
 import { isPk3, openFile as pk3Open } from './pk3parse.js';
-import { root, addPath } from './directory.js';
+import { root, empty, addSingle, addPath } from './directory.js';
 import parseSocFile from './socparse.js';
 import convertGraphic from './graphicsconvert.js';
 
 const notImplementedError = Error("Not (yet) implemented.")
+
+function combineSocs(filename, socs) {
+  let resSoc = {};
+  socs.forEach(socfile => {
+    resSoc = parseSocFile(filename, socfile, resSoc)
+  });
+  return resSoc;
+}
 
 class Srb2kfile {
   constructor(path) {
@@ -16,27 +24,60 @@ class Srb2kfile {
   async setBaseFile(file) {
     const srb2pk3 = await openFile(file)
     await srb2pk3.loadData()
-    this.PLAYPAL = (await srb2pk3.getBuffer("PLAYPAL"))[0]
+    this.PLAYPAL = await srb2pk3.getBuffer("PLAYPAL")
   }
 
   loadData() {
+    console.log("data")
     throw notImplementedError
   }
 
   getDirectory() {
+    console.log("directory")
     throw notImplementedError;
   }
 
   getText() {
+    console.log("text")
     throw notImplementedError;
   }
-  getImage() {
+
+  async getImage(file) {
+    const base = basename(file);
+    const dir = this.getDirectory();
+    if( /^MAP..P.*/i.test(base) ) {
+      const mapid = base.substr(3,2).toLowerCase();
+      const soc = await this.getAllSocs();
+      const paletteId = soc.level[mapid].palette;
+      let palette, palettePath;
+      if(paletteId) {
+        palettePath = this.findPalette(paletteId);
+      }
+      if(palettePath) {
+        palette = await this.getBuffer(palettePath);
+      } else {
+        if( ! this.PLAYPAL) throw "Missing basefile."
+        palette = this.PLAYPAL;
+      }
+      return this.getImageWithPalette(file, palette)
+    }
+  }
+  getImageWithPalette(file, palette) {
+    return this.getBuffer(file).then(content => convertGraphic(content, palette));
+  }
+  getSoc(file) {
+    return this.data.getText(file).then(content => parseSocFile(basename(this.path), content, {}));
+  }
+  getAllSocs() {
+    console.log("all socs")
     throw notImplementedError;
   }
-  getSoc() {
+  findPalette(paletteId) {
+    console.log("palette")
     throw notImplementedError;
   }
   getBuffer() {
+    console.log("buffer")
     throw notImplementedError;
   }
 }
@@ -61,41 +102,17 @@ export class Pk3 extends Srb2kfile {
     return this.data.file(file).async("string");
   }
 
-  async getImage(file) {
-    const base = basename(file);
-    const dir = this.getDirectory();
-    if( /^MAP..P.*/i.test(base) ) {
-      const mapid = base.substr(3,2).toLowerCase();
-      const soc = await this.getAllSocs();
-      const paletteid = soc.level[mapid].palette;
-      let palette;
-      if(paletteid) {
-        const palettePath = dir.search(/palettes/i)?.search(new RegExp(`^PAL${paletteid}\.pal$`)).fullpath;
-        palette = await this.getBuffer(palettePath);
-      } else {
-        if( ! this.PLAYPAL) throw "Missing basefile."
-        palette = this.PLAYPAL;
-      }
-      return this.getImageWithPalette(file, palette)
-    }
-  }
-
-  getImageWithPalette(file, palette) {
-    return this.data.file(file).async("nodebuffer").then(content => convertGraphic(content, palette));
-  }
-
-  getSoc(file) {
-    return this.data.getText(file).then(content => parseSocFile(basename(this.path), content, {}));
-  }
 
   getAllSocs() {
     let fullSoc = {};
     const socs = [];
     const socfolder = this.data.folder(/soc/i)[0].name;
     this.data.folder(socfolder).forEach((path, file) => socs.push(file.async("string")));
-    return Promise.all(socs).then(socfiles => 
-      socfiles.forEach(socfile => parseSocFile(basename(this.path), socfile, fullSoc))
-    ).then(() => fullSoc);
+    return Promise.all(socs).then(socfiles => combineSocs(basename(this.path), socfiles));
+  }
+
+  findPalette(paletteId) {
+    return this.directory.search(/palettes/i)[0].search(new RegExp(`^PAL${paletteId}\.pal$`))[0].fullpath;
   }
 
   getBuffer(file) {
@@ -106,29 +123,47 @@ export class Pk3 extends Srb2kfile {
 export class Wad extends Srb2kfile {
 
   async loadData() {
-    this.directory = await getDirectory(this.path);
+    this.directory = empty("", "");
+    const dir = await getDirectory(this.path);
+    dir.forEach(file => {
+      addSingle(this.directory, file.name);
+    });
     return this;
   }
 
+  getDirectory() {
+    return this.directory;
+  }
+
   getText(file) {
-    return this.getBuffer(file).then(lumps => lumps.map(buffer => buffer.toString('utf-8')));
+    return this.getBuffer(file).then(lump => lump.toString('utf-8'));
   }
 
-  getImage(file) {
-  }
-
-  getImage(file, palette) {
-  }
-  
   async getSoc(file) {
-    let soc = {};
-    (await this.getText(file)).forEach(socText => {
-      soc = parseSocFile(basename(this.path, socText, soc))
-    });
+    const socText = await this.getText(file)
+    const soc = parseSocFile(basename(this.path), socText, {});
     return soc
   }
+
+  async getAllSocs() {
+    const socfiles = [...this.directory.search(/MAINCFG/), ...this.directory.search(/^SOC_/i)].map(f => f.fullpath)
+
+    const socs =  await Promise.all(socfiles.map(file => this.getText(file)));
+    const res = combineSocs(basename(this.path), socs);
+    return res;
+  }
+
   
+  findPalette(paletteId) {
+    return this.directory.search(new RegExp(`PAL${paletteId}(\.pal)?$`)).fullpath;
+  }
+
   getBuffer(file) {
+    console.log(file);
+    return this.getBuffers(file).then(bs => bs[0]);
+  }
+
+  getBuffers(file) {
     return getLumps(this.path, file);
   }
 }
