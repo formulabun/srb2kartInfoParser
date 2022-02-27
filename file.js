@@ -6,7 +6,9 @@ import { root, addPath } from './directory.js';
 import parseSocFile from './socparse.js';
 import convertGraphic from './graphicsconvert.js';
 
-export class Pk3 {
+const notImplementedError = Error("Not (yet) implemented.")
+
+class Srb2kfile {
   constructor(path) {
     this.path = path;
   }
@@ -16,6 +18,30 @@ export class Pk3 {
     await srb2pk3.loadData()
     this.PLAYPAL = (await srb2pk3.getBuffer("PLAYPAL"))[0]
   }
+
+  loadData() {
+    throw notImplementedError
+  }
+
+  getDirectory() {
+    throw notImplementedError;
+  }
+
+  getText() {
+    throw notImplementedError;
+  }
+  getImage() {
+    throw notImplementedError;
+  }
+  getSoc() {
+    throw notImplementedError;
+  }
+  getBuffer() {
+    throw notImplementedError;
+  }
+}
+
+export class Pk3 extends Srb2kfile {
 
   async loadData() {
     this.data = await pk3Open(this.path);
@@ -59,7 +85,7 @@ export class Pk3 {
   }
 
   getSoc(file) {
-    return this.data.file(file).async("string").then(content => parseSocFile(basename(this.path), content, {}));
+    return this.data.getText(file).then(content => parseSocFile(basename(this.path), content, {}));
   }
 
   getAllSocs() {
@@ -77,18 +103,15 @@ export class Pk3 {
   }
 }
 
-export class Wad {
-  constructor(filename) {
-    this.filename = filename;
-  }
+export class Wad extends Srb2kfile {
 
   async loadData() {
-    this.directory = await getDirectory(this.filename);
+    this.directory = await getDirectory(this.path);
     return this;
   }
 
   getText(file) {
-    return Promise.all(this.getBuffer(file).map(buffer => buffer.toString('utf-8')));
+    return this.getBuffer(file).then(lumps => lumps.map(buffer => buffer.toString('utf-8')));
   }
 
   getImage(file) {
@@ -100,13 +123,13 @@ export class Wad {
   async getSoc(file) {
     let soc = {};
     (await this.getText(file)).forEach(socText => {
-      soc = parseSocFile(basename(this.filename, socText, soc))
+      soc = parseSocFile(basename(this.path, socText, soc))
     });
     return soc
   }
   
   getBuffer(file) {
-    return getLumps(this.filename, file);
+    return getLumps(this.path, file);
   }
 }
 
