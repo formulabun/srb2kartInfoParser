@@ -21,8 +21,8 @@ class Srb2kfile {
     this.path = path;
   }
 
-  async setBaseFile(file) {
-    const srb2pk3 = await openFile(file)
+  async setBaseFile(filepath) {
+    const srb2pk3 = await openFile(filepath)
     await srb2pk3.loadData()
     this.PLAYPAL = await srb2pk3.getBuffer("PLAYPAL")
   }
@@ -98,8 +98,8 @@ export class Pk3 extends Srb2kfile {
     return this.directory;
   }
 
-  getText(file) {
-    return this.data.file(file).async("string");
+  getText(filepath) {
+    return this.data.file(filepath).async("string");
   }
 
 
@@ -135,8 +135,8 @@ export class Wad extends Srb2kfile {
     return this.directory;
   }
 
-  getText(file) {
-    return this.getBuffer(file).then(lump => lump.toString('utf-8'));
+  getText(filepath) {
+    return this.getBuffer(filepath).then(lump => lump.toString('utf-8'));
   }
 
   async getSoc(file) {

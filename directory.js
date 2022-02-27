@@ -5,8 +5,8 @@ function empty(path, name) {
   return {
     fullpath: join(path, name),
     children: {},
-    get: function(filename) {
-      return this.children[filename];
+    get: function(name) {
+      return this.children[name];
     },
     search: function(regex) {
       const result = [];
