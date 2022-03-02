@@ -44,7 +44,7 @@ function convertGraphic(bytes, palette) {
     }
   }
   ctx.putImageData(image, 0, 0);
-  return canvas;
+  return canvas.createPNGStream();
 }
 
 export default convertGraphic;

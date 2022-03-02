@@ -16,13 +16,11 @@ describe("graphics", function () {
           getLumps(mapskart, "MAP01P").then(([lump]) => {
             expect(pal).to.be.ok;
             expect(lump).to.be.ok;
-            const img = convertGraphic(lump, pal);
-            expect(img).to.be.ok;
-            return fs.writeFile(
-              "./test/Graphics/MAP01.png",
-              img.toBuffer("image/png"),
-              done
-            );
+            const imgstream = convertGraphic(lump, pal);
+            expect(imgstream).to.be.ok;
+            const filestream = fs.createWriteStream('./test/Graphics/MAP01.png');
+            imgstream.pipe(filestream);
+            filestream.on('finish', done);
           })
         )
         .catch(done);

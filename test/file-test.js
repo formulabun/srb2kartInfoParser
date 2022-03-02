@@ -1,5 +1,6 @@
 import { expect } from "chai";
 import Canvas from "canvas";
+import stream from "stream";
 
 import { Pk3, Wad } from "../file.js";
 import openFile from "../file.js";
@@ -47,7 +48,6 @@ describe("file.js", function () {
           .then(() => ipfile.getImage("Graphics/MAPS0P"))
           .then((image) => {
             expect(image).to.be.ok;
-            expect(image).to.be.instanceof(Canvas.Canvas);
             done();
           })
           .catch(done);
@@ -59,7 +59,6 @@ describe("file.js", function () {
           .then(() => ctapfile.getImage("Graphics/MAPGQP.lmp"))
           .then((image) => {
             expect(image).to.be.ok;
-            expect(image).to.be.instanceof(Canvas.Canvas);
             done();
           })
           .catch(done);
@@ -96,7 +95,6 @@ describe("file.js", function () {
           .then(() => batteryfile.getImage("MAP80P"))
           .then((image) => {
             expect(image).to.be.ok;
-            expect(image).to.be.instanceof(Canvas.Canvas);
             done();
           })
           .catch(done);
