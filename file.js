@@ -49,7 +49,7 @@ class Srb2kfile {
     if (/^MAP..P.*/i.test(base)) {
       const mapid = base.substr(3, 2).toLowerCase();
       const soc = await this.getAllSocs();
-      const paletteId = soc.level[mapid].palette;
+      const paletteId = parseInt(soc.level[mapid].palette)-1;
       let palettePath;
       if (paletteId) {
         palettePath = this.findPalette(paletteId);

@@ -71,7 +71,6 @@ describe("directory", function () {
       addPath(a, "foo/foo");
       addPath(a ,"foo/spam");
       const allFiles = a.allFiles();
-      console.log(allFiles);
       expect(allFiles).to.have.lengthOf(8)
     });
   });

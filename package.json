@@ -1,6 +1,6 @@
 {
   "name": "srb2kartjs",
-  "version": "2.2.1",
+  "version": "2.2.2",
   "description": "javascript module for everything related to the open source game srb2kart",
   "main": "main.js",
   "type": "module",
