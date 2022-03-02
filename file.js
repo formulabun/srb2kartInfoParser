@@ -114,7 +114,8 @@ export class Pk3 extends Srb2kfile {
   }
 
   findPalette(paletteId) {
-    return this.directory.search(/palettes/i)[0].search(new RegExp(`^PAL${paletteId}\.pal$`))[0].fullpath;
+    const paletteRegEx = new RegExp(`.*PAL${paletteId}.*$`);
+    return this.directory.search(/palettes/i)[0].allFiles().filter(c => paletteRegEx.test(c))[0];
   }
 
   getBuffer(file) {

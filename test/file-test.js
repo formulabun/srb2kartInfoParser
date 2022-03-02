@@ -21,6 +21,7 @@ describe("file.js", function () {
   describe("pk3file", function () {
     const ctap = "./test/pk3s/kr_CTAP-v5.3.pk3";
     const ip = "./test/pk3s/KRB_IP-v2.1.pk3";
+    const dig = "./test/pk3s/KRBL_DigPack_v8.0.pk3";
     describe("#getAllSocs", function () {
       it("works", function (done) {
         const pk3file = new Pk3(ctap);
@@ -41,6 +42,7 @@ describe("file.js", function () {
     describe("#getImage", function () {
       const ctapfile = new Pk3(ctap);
       const ipfile = new Pk3(ip);
+      const digfile = new Pk3(dig);
       it("works with default palette", function (done) {
         ipfile
           .loadData()
@@ -54,9 +56,9 @@ describe("file.js", function () {
       });
 
       it("works with custom palette in map pack", function (done) {
-        ctapfile
+        digfile 
           .loadData()
-          .then(() => ctapfile.getImage("Graphics/MAPGQP.lmp"))
+          .then(() => digfile.getImage(digfile.getDirectory().allFiles().filter(f => /.*MAPDAP.*/.test(f))[0]))
           .then((image) => {
             expect(image).to.be.ok;
             done();
