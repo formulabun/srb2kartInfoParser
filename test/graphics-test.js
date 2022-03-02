@@ -18,9 +18,11 @@ describe("graphics", function () {
             expect(lump).to.be.ok;
             const imgstream = convertGraphic(lump, pal);
             expect(imgstream).to.be.ok;
-            const filestream = fs.createWriteStream('./test/Graphics/MAP01.png');
+            const filestream = fs.createWriteStream(
+              "./test/Graphics/MAP01.png"
+            );
             imgstream.pipe(filestream);
-            filestream.on('finish', done);
+            filestream.on("finish", done);
           })
         )
         .catch(done);
