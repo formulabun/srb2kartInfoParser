@@ -27,6 +27,7 @@ class Srb2kfile {
     const srb2pk3 = await openFile(filepath);
     await srb2pk3.loadData();
     this.PLAYPAL = await srb2pk3.getBuffer("PLAYPAL");
+    return;
   }
 
   loadData() {

@@ -62,4 +62,17 @@ describe("directory", function () {
       expect(a.search(/^foo.*/)).to.have.lengthOf(3);
     });
   });
+
+  describe("#allFiles", function () {
+    it("works", function () {
+      const a = root();
+      addPath(a, "foo/bar/spam");
+      addPath(a, "foo/bar/bar/spam");
+      addPath(a, "foo/foo");
+      addPath(a ,"foo/spam");
+      const allFiles = a.allFiles();
+      console.log(allFiles);
+      expect(allFiles).to.have.lengthOf(8)
+    });
+  });
 });

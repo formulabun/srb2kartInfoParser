@@ -1,23 +1,46 @@
 import { join } from "path";
+import _ from 'lodash';
 
-// some helper functions for file.js
-function empty(path, name) {
-  return {
-    fullpath: join(path, name),
-    children: {},
-    get(name) {
-      return this.children[name];
-    },
-    search(regex) {
-      const result = [];
-      for (const c in this.children) {
-        if (this.children.hasOwnProperty(c) && regex.test(c)) {
-          result.push(this.children[c]);
-        }
+// helper class for file.js
+
+class Directory {
+  constructor(path, name) {
+    this.fullpath = join(path, name);
+    this.children = {};
+  }
+
+  get(name) {
+    return this.children[name];
+  }
+
+  search(regex) {
+    const result = [];
+    for (const c in this.children) {
+      if (this.children.hasOwnProperty(c) && regex.test(c)) {
+        result.push(this.children[c]);
       }
-      return result;
-    },
-  };
+    }
+    return result;
+  }
+
+  allFiles() {
+    return _.flattenDeep(this._allFiles());
+  }
+
+  _allFiles() {
+    const result = [];
+    result.push(this.fullpath);
+    for (const c in this.children) {
+      if(this.children.hasOwnProperty(c)) {
+        result.push(this.children[c]._allFiles());
+      }
+    }
+    return result;
+  }
+}
+
+function empty(path, name) {
+  return new Directory(path, name);
 }
 
 function root() {

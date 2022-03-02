@@ -39,7 +39,7 @@ import {getSrb2Info, openFile, logger, parseSocFile} from "srb2kartjs";
 #### `file.setBaseFile(path);`
 
 - Set the `srb2.pk3` file. This is needed for the palette when extracting images.
-- Returns: nothing
+- Returns: Promise\<>
 
 #### `file.getDirectory();`
 
@@ -54,7 +54,7 @@ import {getSrb2Info, openFile, logger, parseSocFile} from "srb2kartjs";
 #### `file.getImage(path);`
 
 * Get a graphic from the file using the full path as given by the directory. Needs `setBaseFile` if no custom palette is used.
-* Returns: Promise\<Canvas>
+* Returns: Promise\<ReadableStream>
 
 #### `file.getSoc(path);`
 
@@ -88,6 +88,11 @@ Object used by the wad and pk3 file objects. This contains the entire directory 
 
 * Find all children where the name matches the regex.
 * Returns: [Directory object]
+
+#### `directory.allFiles();`
+
+* Get a list of all the file paths (`fullname`) starting from this directory.
+* Returns [String]
 
 # log
 
