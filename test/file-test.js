@@ -56,9 +56,16 @@ describe("file.js", function () {
       });
 
       it("works with custom palette in map pack", function (done) {
-        digfile 
+        digfile
           .loadData()
-          .then(() => digfile.getImage(digfile.getDirectory().allFiles().filter(f => /.*MAPDAP.*/.test(f))[0]))
+          .then(() =>
+            digfile.getImage(
+              digfile
+                .getDirectory()
+                .allFiles()
+                .filter((f) => /.*MAPDAP.*/.test(f))[0]
+            )
+          )
           .then((image) => {
             expect(image).to.be.ok;
             done();

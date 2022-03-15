@@ -3,6 +3,20 @@ import { logger } from "../main.js";
 import { expect } from "chai";
 
 describe("logger", function () {
+  it("doesn't crash on default file and produces some lines", function () {
+    var lines = 0;
+    const log = logger("/home/Fl_GUI/.srb2kart/log.txt");
+    log.on("line", (l) => (lines = lines + 1));
+    return new Promise((res, rej) => {
+      log.on("line", (l) => {
+        if (l != "I_ShutdownSystem(): end of logstream.") return;
+        expect(lines).to.be.at.least(5);
+        log.stop();
+        res();
+      });
+    });
+  });
+
   describe("parsers", function () {
     let log;
     before(function () {

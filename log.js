@@ -27,16 +27,21 @@ class Srb2KartLogEmitter extends EventEmitter {
     this.filepath = filepath;
 
     (async () => {
-      let fh = await open(filepath);
-      this.emitLines(await fh.readFile({ encoding: "utf-8" }));
-
-      watchFile(filepath, { interval: 100 }, async (curr, prev) => {
-        if (curr.size < prev.size) {
-          await fh.close();
-          fh = await open(filepath);
-        }
+      try {
+        let fh = await open(filepath);
         this.emitLines(await fh.readFile({ encoding: "utf-8" }));
-      });
+
+        watchFile(filepath, { interval: 100 }, async (curr, prev) => {
+          if (curr.size < prev.size) {
+            await fh.close();
+            fh = await open(filepath);
+          }
+          this.emitLines(await fh.readFile({ encoding: "utf-8" }));
+        });
+      } catch(e) {
+        // because it's not thrown otherwise
+        console.error(e);
+      }
     })();
 
     this.parsers = [
@@ -53,7 +58,7 @@ class Srb2KartLogEmitter extends EventEmitter {
       this.roundEnd,
       this.playerVoteCalled,
       this.playerVote,
-      this.voteResults,
+      this.voteComplet,
     ];
 
     this.parsersState = {};
@@ -74,6 +79,7 @@ class Srb2KartLogEmitter extends EventEmitter {
           const ret = parser(l);
           if (ret) this.emit(ret.e, ret.o);
         });
+        this.emit("parsers called");
       });
     }
   }

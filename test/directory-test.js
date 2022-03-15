@@ -69,9 +69,9 @@ describe("directory", function () {
       addPath(a, "foo/bar/spam");
       addPath(a, "foo/bar/bar/spam");
       addPath(a, "foo/foo");
-      addPath(a ,"foo/spam");
+      addPath(a, "foo/spam");
       const allFiles = a.allFiles();
-      expect(allFiles).to.have.lengthOf(8)
+      expect(allFiles).to.have.lengthOf(8);
     });
   });
 });
