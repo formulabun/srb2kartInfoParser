@@ -52,8 +52,7 @@ class Srb2KartLogEmitter extends EventEmitter {
       this.newMap,
       this.command,
       this.playerFinish,
-      this.serverStart,
-      this.serverStop,
+      this.ttyShutdown,
       this.speedingOffTo,
       this.roundEnd,
       this.playerVoteCalled,
@@ -61,6 +60,7 @@ class Srb2KartLogEmitter extends EventEmitter {
       this.voteComplete,
       this.logStreamEnd,
       this.gameLoopEnter,
+      this.pwadNotFoundOrInvalid
     ];
 
     this.parsersState = {};
@@ -77,7 +77,7 @@ class Srb2KartLogEmitter extends EventEmitter {
   emitLines(lines) {
     if (lines) {
       lines.split("\n").filter((l) => l).forEach((l) => {
-        this.emit("line", l);
+        this.emit("line", {l});
         this.parsers.forEach((parser) => {
           const ret = parser(l);
           if (ret) this.emit(ret.e, ret.o);
@@ -235,8 +235,8 @@ class Srb2KartLogEmitter extends EventEmitter {
     };
   })
 
-  serverStart = exactMatch('Entering main game loop...', 'serverStart')
-  serverStop = exactMatch('Shutdown tty console', 'serverStop', () => {
+  gameLoopEnter = exactMatch('Entering main game loop...', 'gameLoopEnter')
+  ttyShutdown = exactMatch('Shutdown tty console', 'ttyShutdown', () => {
     this._gamestate.players = this._gamestate.players.map(() => ({}));
   })
 
@@ -245,7 +245,8 @@ class Srb2KartLogEmitter extends EventEmitter {
 
   logStreamEnd = exactMatch('I_ShutdownSystem(): end of logstream.', 'logStreamEnd')
 
-  gameLoopEnter = exactMatch('Entering main game loop...', 'gameLoopEnter')
+
+  pwadNotFoundOrInvalid = exactMatch('A PWAD file was not found or not valid.', 'pwadNotFoundOrInvalid');
 
 }
 

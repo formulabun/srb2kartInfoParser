@@ -104,6 +104,13 @@ Object used by the wad and pk3 file objects. This contains the entire directory 
 ##### Log events
 
 ```js
+"line" // emitted on every line
+{
+    line
+}
+```
+
+```js
 "playerJoin"
 {
     name,
@@ -223,13 +230,10 @@ Object used by the wad and pk3 file objects. This contains the entire directory 
 }
 ```
 
-```js
-"serverStart"
-{}
-```
+The next events are exact matches with lines in the log without any state or data. Use these as a shortcut around doing exact matches with the `"line"` event.
 
 ```js
-"serverStop"
+"ttyShutdown"
 {}
 ```
 
@@ -242,6 +246,23 @@ Object used by the wad and pk3 file objects. This contains the entire directory 
 "roundEnd"
 {}
 ```
+
+```js
+"logStreamEnd"
+{}
+```
+
+```js
+"gameLoopEnter"
+{}
+```
+
+```js
+"pwadNotFoundOrInvalid"
+{}
+```
+
+
 
 # Basics
 
