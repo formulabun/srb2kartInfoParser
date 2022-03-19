@@ -26,18 +26,18 @@ class Srb2KartLogEmitter extends EventEmitter {
 
     this.filepath = filepath;
 
+
     (async () => {
       try {
-        let fh = await open(filepath);
-        this.emitLines(await fh.readFile({ encoding: "utf-8" }));
-
-        watchFile(filepath, { interval: 100 }, async (curr, prev) => {
-          if (curr.size < prev.size) {
-            await fh.close();
-            fh = await open(filepath);
+        this.fh = await open(filepath);
+        watchFile(filepath, { interval: 100 }, async (prev, next) => {
+          if (prev.size > next.size) {
+            await this.fh.close();
+            this.fh = await open(filepath);
           }
-          this.emitLines(await fh.readFile({ encoding: "utf-8" }));
+          this.emitLines(await this.fh.readFile({ encoding: "utf-8" }));
         });
+        this.emitLines(await this.fh.readFile({ encoding: "utf-8" }));
       } catch(e) {
         // because it's not thrown otherwise
         console.error(e);
@@ -58,13 +58,16 @@ class Srb2KartLogEmitter extends EventEmitter {
       this.roundEnd,
       this.playerVoteCalled,
       this.playerVote,
-      this.voteComplet,
+      this.voteComplete,
+      this.logStreamEnd,
+      this.gameLoopEnter,
     ];
 
     this.parsersState = {};
   }
 
   stop() {
+    this.fh.close();
     unwatchFile(this.filepath);
   }
 
@@ -239,16 +242,21 @@ class Srb2KartLogEmitter extends EventEmitter {
 
   speedingOffTo = exactMatch('Speeding of to level...', 'speedingOffTo')
   roundEnd = exactMatch('The round has ended.', 'roundEnd')
+
+  logStreamEnd = exactMatch('I_ShutdownSystem(): end of logstream.', 'logStreamEnd')
+
+  gameLoopEnter = exactMatch('Entering main game loop...', 'gameLoopEnter')
+
 }
 
 
-// singleton
-let s2klogger
-function logger(file = "~/.srb2kart/log.txt") {
-  if (!s2klogger) {
-    s2klogger = new Srb2KartLogEmitter(file);
+// map of logfiles
+let s2kloggers = new Map();
+function logger(file) {
+  if (s2kloggers.has(file)) {
+    return s2kloggers.get(file);
   }
-  return s2klogger;
+  return s2kloggers.set(file, new Srb2KartLogEmitter(file)).get(file);
 }
 
 
