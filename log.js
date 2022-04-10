@@ -30,8 +30,9 @@ class Srb2KartLogEmitter extends EventEmitter {
     (async () => {
       try {
         this.fh = await open(filepath);
-        watchFile(filepath, { interval: 100 }, async (prev, next) => {
-          if (prev.size > next.size) {
+        watchFile(filepath, { interval: 100 }, async (curr, prev) => {
+          if (prev.size > curr.size) {
+            console.log("closing and reopening");
             await this.fh.close();
             this.fh = await open(filepath);
           }
