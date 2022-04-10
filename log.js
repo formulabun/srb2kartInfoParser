@@ -180,6 +180,8 @@ class Srb2KartLogEmitter extends EventEmitter {
   playerVoteCalled = startsWith("*")((line) => {
     const player = this._gamestate.players.filter((p) => line.startsWith(p.name, 1)).reduce(longestNameReducer, false);
     if (!player) return false;
+    const check = line.substr(1 + player.name.length, " called a vote to ".length);
+    if (check !== " called a vote to ") return false;
     const begin = line.substr(1 + player.name.length + " called a vote to ".length);
     const command = begin.substr(0, begin.indexOf("."));
     this.parsersState.vote = {
@@ -216,7 +218,8 @@ class Srb2KartLogEmitter extends EventEmitter {
   })
 
   voteComplete = startsWith("*")((line) => {
-    if(!this.parsersState.vote) return false
+    if(!this.parsersState.vote)
+      return false;
     const voteSuccess = line.startsWith("*Vote passed!");
     const voteFailed = line.startsWith("*Vote failed.");
     if(! (voteSuccess || voteFailed)) return false
