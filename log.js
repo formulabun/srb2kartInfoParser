@@ -61,6 +61,7 @@ class Srb2KartLogEmitter extends EventEmitter {
       this.voteComplete,
       this.logStreamEnd,
       this.gameLoopEnter,
+      this.sinkHit,
       this.pwadNotFoundOrInvalid
     ];
 
@@ -238,6 +239,20 @@ class Srb2KartLogEmitter extends EventEmitter {
       }
     };
   })
+
+  sinkHit = (line) => {
+    const player = this._gamestate.players.filter((p) => line.startsWith(p.name)).reduce(longestNameReducer, false);
+    if (!player)
+      return false;
+    if (line.substr(player.name.length) !== " was hit by a kitchen sink.")
+      return false;
+    return {
+      e: "kitchenSinkHit",
+      o: {
+        player
+      }
+    }
+  }
 
   gameLoopEnter = exactMatch('Entering main game loop...', 'gameLoopEnter')
   ttyShutdown = exactMatch('Shutdown tty console', 'ttyShutdown', () => {

@@ -87,5 +87,16 @@ describe("logger", function () {
         log.playerLeave("*Player 2 left the game");
       });
     });
+    it("sink", function () {
+      const join = log.playerJoin(
+        "*Player 2 has joined the game (node 1) (127.0.0.1:41187)"
+      );
+      const rename = log.playerRename("*Player 2 renamed to Fl_GUI");
+      const sink = log.sinkHit("Fl_GUI was hit by a kitchen sink.");
+      const leave = log.playerLeave("*Fl_GUI left the game");
+      expect(sink.o).to.be.ok;
+      expect(sink.o.player).to.be.ok;
+      expect(sink.o.player.name).to.equal("Fl_GUI");
+    });
   });
 });

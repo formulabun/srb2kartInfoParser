@@ -230,6 +230,17 @@ Object used by the wad and pk3 file objects. This contains the entire directory 
 }
 ```
 
+```js
+"kitchenSinkHit"
+{
+    player: {
+        name,
+        node,
+        ip
+    }
+}
+```
+
 The next events are exact matches with lines in the log without any state or data. Use these as a shortcut around doing exact matches with the `"line"` event.
 
 ```js
