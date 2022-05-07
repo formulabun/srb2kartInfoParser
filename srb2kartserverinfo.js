@@ -41,7 +41,7 @@ const parseServerInfo = (msg) => {
   res.maptitle = trimNullBytes(msg.slice(offset, offset + 33)).toString("utf-8"); offset += 33;
   res.mapmd5 = msg.slice(offset, offset + 16); offset += 16;
   res.actnum = msg.readInt8(offset++);
-  res.iszon = msg.readInt8(offset++);
+  res.iszone = msg.readInt8(offset++);
   res.httpsource = trimNullBytes(msg.slice(offset, offset + 256)).toString("utf-8"); offset += 256;
 
   for (let i = 0; i < res.fileneedednum; i++) {
